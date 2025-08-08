@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Disallow: /dist/
+Disallow: /.parcel-cache/
+Disallow: /node_modules/
+
+Allow: /src/
+Allow: /README.md
+Allow: /package.json
+
+Sitemap: https://your-domain.com/sitemap.xml 

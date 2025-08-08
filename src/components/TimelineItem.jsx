@@ -67,7 +67,6 @@ const TimelineItem = ({
 
     return (
       <>
-        {/* Original item (faded) */}
         <div
           ref={itemRef}
           className="timeline-item dragging-original"
@@ -82,7 +81,6 @@ const TimelineItem = ({
           </div>
         </div>
 
-        {/* Drag preview */}
         <div
           className="timeline-item drag-preview"
           style={{

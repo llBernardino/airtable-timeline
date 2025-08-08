@@ -3,17 +3,14 @@ import ReactDOM from "react-dom/client";
 import timelineItems from "./timelineItems.js";
 import "./app.css";
 
-// Import components
 import Timeline from "./components/Timeline.jsx";
 import TimelineHeader from "./components/TimelineHeader.jsx";
 import DarkModeToggle from "./components/DarkModeToggle.jsx";
 
-// Import hooks
 import { useTimelineDrag } from "./hooks/useTimelineDrag.js";
 import { useTimelinePan } from "./hooks/useTimelinePan.js";
 import { useTimelineZoom } from "./hooks/useTimelineZoom.js";
 
-// Import utilities
 import { assignLanes } from "./utils/timelineUtils.js";
 
 const App = () => {
