@@ -1,0 +1,493 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode {
+  background-color: #0f0f0f;
+  color: #e2e8f0;
+}
+
+.app {
+  max-width: 1400px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.app h1 {
+  margin: 0;
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.timeline-hint {
+  padding: 12px 24px;
+  background: #f0f9ff;
+  border-bottom: 1px solid #e1e5e9;
+  text-align: center;
+}
+
+.timeline-hint span {
+  color: #0369a1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.timeline-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e1e5e9;
+  background: #fafbfc;
+}
+
+.timeline-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-controls button {
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.timeline-controls button:hover {
+  background: #5a6fd8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.timeline-controls button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.timeline-controls .zoom-level {
+  font-weight: 600;
+  color: #374151;
+  min-width: 40px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.timeline-controls .fit-button {
+  background: #10b981;
+}
+
+.timeline-controls .fit-button:hover {
+  background: #059669;
+}
+
+.timeline-scale-container {
+  overflow-x: auto;
+  border-bottom: 2px solid #e1e5e9;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.timeline-scale-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.timeline-scale {
+  position: relative;
+  height: 40px;
+  min-width: 100%;
+  padding-left: 20px;
+}
+
+.timeline-month {
+  position: absolute;
+  top: 8px;
+  padding-left: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  transform: translateX(-50%);
+  min-width: 40px;
+  text-align: center;
+}
+
+.timeline-container {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 20px 24px 20px 44px; /* Increased left padding */
+  cursor: grab;
+  user-select: none;
+}
+
+.timeline-container:active {
+  cursor: grabbing;
+}
+
+.timeline-container.panning {
+  cursor: grabbing !important;
+}
+
+.timeline-container.panning * {
+  pointer-events: none;
+}
+
+.timeline-container.panning .timeline-item {
+  pointer-events: none;
+}
+
+.timeline-lanes {
+  position: relative;
+  min-height: 100%;
+  width: 100%;
+}
+
+.timeline-lane {
+  width: 100%;
+  height: 60px;
+  border-bottom: 2px solid #e5e7eb;
+  box-sizing: border-box;
+}
+
+.timeline-lane:last-child {
+  border-bottom: none;
+}
+
+.timeline-lane.empty-lane {
+  background-color: #fafbfc;
+  border-bottom: 2px solid #e5e7eb !important;
+}
+
+/* Ensure lanes extend fully across the timeline */
+.timeline-lanes .timeline-lane {
+  min-width: 100%;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Make borders more visible and ensure they extend fully */
+.timeline-lane {
+  border-bottom: 2px solid #e5e7eb !important;
+}
+
+/* Drag preview styling */
+.timeline-drag-preview {
+  position: absolute;
+  background-color: rgba(102, 126, 234, 0.3);
+  border: 2px dashed #667eea;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 1000;
+  transition: all 0.1s ease;
+}
+
+.timeline-item {
+  position: absolute;
+  height: 50px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  transition: all 0.15s ease;
+  border: 2px solid transparent;
+  overflow: hidden;
+}
+
+.timeline-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.timeline-item:active {
+  cursor: grabbing;
+}
+
+.timeline-item.dragging {
+  transform: scale(1.05);
+  z-index: 1000;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  cursor: grabbing !important;
+}
+
+.timeline-item-content {
+  padding: 8px 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.timeline-item-name {
+  font-weight: 600;
+  margin-bottom: 2px;
+  cursor: text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timeline-item-name:hover {
+  text-decoration: underline;
+}
+
+.timeline-item-name-input {
+  background: transparent;
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
+  outline: none;
+  width: 100%;
+  margin-bottom: 2px;
+}
+
+.timeline-item-name-input::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.timeline-item-dates {
+  font-size: 10px;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Scrollbar styling */
+.timeline-container::-webkit-scrollbar,
+.timeline-scale::-webkit-scrollbar {
+  height: 8px;
+}
+
+.timeline-container::-webkit-scrollbar-track,
+.timeline-scale::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.timeline-container::-webkit-scrollbar-thumb,
+.timeline-scale::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.timeline-container::-webkit-scrollbar-thumb:hover,
+.timeline-scale::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  .app h1 {
+    font-size: 24px;
+    padding: 20px;
+  }
+
+  .timeline-header {
+    padding: 16px 20px;
+  }
+
+  .timeline-container {
+    padding: 16px 20px;
+  }
+
+  .timeline-item-content {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .timeline-item-name {
+    font-size: 11px;
+  }
+
+  .timeline-item-dates {
+    font-size: 9px;
+  }
+}
+
+/* Additional styles from the new implementation */
+.timeline-item.dragging-original {
+  pointer-events: none;
+  cursor: grabbing;
+}
+
+.timeline-item.drag-preview {
+  pointer-events: none;
+  animation: dragPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes dragPulse {
+  from {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.07);
+  }
+}
+
+.timeline-item-name-input {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
+  outline: none;
+  width: 100%;
+  margin-bottom: 2px;
+  padding: 2px 4px;
+}
+
+.timeline-item-content {
+  padding: 8px 12px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.timeline-item-name {
+  font-weight: 600;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timeline-item-name:hover {
+  text-decoration: underline;
+}
+
+.timeline-item-dates {
+  font-size: 10px;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Dark Mode Styles */
+.app.dark-mode {
+  background: #1a1a1a !important;
+  color: #e2e8f0;
+}
+
+.app.dark-mode h1 {
+  background: linear-gradient(135deg, #4c51bf 0%, #553c9a 100%) !important;
+}
+
+.timeline-header.dark-mode {
+  background: #2d3748 !important;
+  border-bottom: 1px solid #4a5568 !important;
+}
+
+.timeline-controls.dark-mode {
+  background: #4a5568 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.timeline-controls.dark-mode button {
+  background: #667eea !important;
+  color: white !important;
+}
+
+.timeline-controls.dark-mode button:hover {
+  background: #5a6fd8 !important;
+}
+
+.timeline-controls.dark-mode .zoom-level {
+  color: #e2e8f0 !important;
+}
+
+.timeline-controls.dark-mode .fit-button {
+  background: #38a169 !important;
+}
+
+.timeline-controls.dark-mode .fit-button:hover {
+  background: #2f855a !important;
+}
+
+.timeline-month.dark-mode {
+  color: #a0aec0 !important;
+}
+
+.timeline-container.dark-mode {
+  background: #1a1a1a !important;
+}
+
+.timeline-lane.dark-mode {
+  border-bottom: 2px solid #4a5568 !important;
+}
+
+.timeline-container.dark-mode::-webkit-scrollbar-track {
+  background: #2d3748 !important;
+}
+
+.timeline-container.dark-mode::-webkit-scrollbar-thumb {
+  background: #4a5568 !important;
+}
+
+.timeline-container.dark-mode::-webkit-scrollbar-thumb:hover {
+  background: #718096 !important;
+}
+
+/* Dark mode for timeline items */
+.timeline-item.dark-mode {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.timeline-item.dark-mode:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+.timeline-item-name-input.dark-mode {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  color: white !important;
+}
+
+/* Smooth transitions for all dark mode changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease, box-shadow 0.3s ease;
+}
